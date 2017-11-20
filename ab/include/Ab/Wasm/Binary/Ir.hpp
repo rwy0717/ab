@@ -164,8 +164,13 @@ struct DataSegment {
 inline auto operator<<(Pith::SexprPrinter& out, const DataSegment& segment) -> Pith::SexprPrinter& {
 	out << Pith::sexprStart << "data" << segment.initExpr;
 	auto raw = out << Pith::rawStart << '\"';
-	for (auto c : segment.data)
-		raw << (uint32_t)c;
+	for (auto c : segment.data) {
+		if (c > 32 && c < 127) {
+			raw << c;
+		} else {
+			raw << '\\' << (int)c;
+		}
+	}
 	return raw << '\"' << Pith::rawEnd;
 }
 
