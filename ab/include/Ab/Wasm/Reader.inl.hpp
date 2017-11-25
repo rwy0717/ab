@@ -1,11 +1,10 @@
 #ifndef AB_WASM_BINARY_READER_INL_HPP_
 #define AB_WASM_BINARY_READER_INL_HPP_
 
-#include <Ab/Wasm/Binary/Reader.hpp>
+#include <Ab/Wasm/Reader.hpp>
 
 namespace Ab {
 namespace Wasm {
-namespace Binary {
 
 inline Reader::Reader(Visitor& visitor, std::istream& in) : visitor_{visitor}, in_{in} {
 }
@@ -488,7 +487,6 @@ inline auto Reader::varuint32() -> std::uint64_t {
 	return uleb128();
 }
 
-}  // namespace Binary
 }  // namespace Wasm
 }  // namespace Ab
 

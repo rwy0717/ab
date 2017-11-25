@@ -1,9 +1,10 @@
-#include <Ab/Wasm/Binary/Reader.hpp>
+#include <Ab/Wasm/Reader.hpp>
+#include <Ab/Wasm/NoOpVisitor.hpp>
 #include <gtest/gtest.h>
 
 namespace Ab {
 namespace Wasm {
-namespace Binary {
+
 namespace Test {
 
 class EmptyModuleVisitor : public NoOpVisitor {};
@@ -14,6 +15,6 @@ TEST(TestReader, emptyModule) {
 }
 
 }  // namespace Test
-}  // namespace Binary
+
 }  // namespace Wasm
 }  // namespace Ab

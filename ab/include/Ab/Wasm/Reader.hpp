@@ -3,12 +3,13 @@
 
 #include <Ab/Config.hpp>
 
-#include <Ab/Wasm/Binary/Expression.hpp>
-#include <Ab/Wasm/Binary/Ir.hpp>
-#include <Ab/Wasm/Binary/OpCode.hpp>
-#include <Ab/Wasm/Binary/Section.hpp>
-#include <Ab/Wasm/Binary/TypeCode.hpp>
-#include <Ab/Wasm/Binary/Visitor.hpp>
+#include <Ab/Wasm/Expression.hpp>
+#include <Ab/Wasm/Ir.hpp>
+#include <Ab/Wasm/OpCode.hpp>
+#include <Ab/Wasm/Section.hpp>
+#include <Ab/Wasm/TypeCode.hpp>
+#include <Ab/Wasm/Visitor.hpp>
+#include <Ab/Wasm/ExprReader.hpp>
 #include <Pith/Maybe.hpp>
 #include <cstddef>
 #include <cstdint>
@@ -19,7 +20,6 @@
 
 namespace Ab {
 namespace Wasm {
-namespace Binary {
 
 /// Binary file reader.
 /// https://github.com/WebAssembly/design/blob/master/BinaryEncoding.md
@@ -186,10 +186,9 @@ public:
 	}
 };
 
-}  // namespace Binary
 }  // namespace Wasm
 }  // namespace Ab
 
-#include <Ab/Wasm/Binary/Reader.inl.hpp>
+#include <Ab/Wasm/Reader.inl.hpp>
 
 #endif  // AB_WASM_BINARY_READER_HPP_

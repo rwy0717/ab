@@ -24,6 +24,9 @@ public:
 	/// Set the cell's map.
 	inline auto map(Map* map) noexcept -> Cell&;
 
+	/// The size of the cell.
+	inline auto size() const noexcept -> std::size_t;
+
 private:
 	CellHeader header_;
 };

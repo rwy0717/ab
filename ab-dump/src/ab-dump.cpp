@@ -1,7 +1,10 @@
 #include <Ab/Config.hpp>
-#include <Ab/Wasm/Binary/Expression.hpp>
-#include <Ab/Wasm/Binary/Reader.hpp>
-#include <Ab/Wasm/Binary/Visitor.hpp>
+#include <Ab/Wasm/Expression.hpp>
+#include <Ab/Wasm/Ir.hpp>
+#include <Ab/Wasm/NoOpVisitor.hpp>
+#include <Ab/Wasm/Printing.hpp>
+#include <Ab/Wasm/ExprPrinter.hpp>
+#include <Ab/Wasm/Reader.hpp>
 #include <Pith/Maybe.hpp>
 #include <Pith/SexprPrinter.hpp>
 #include <Pith/StringSpan.hpp>
@@ -26,7 +29,6 @@ struct Config {
 
 namespace Ab {
 namespace Wasm {
-namespace Binary {
 
 const bool DEBUG = false;
 
@@ -176,14 +178,13 @@ private:
 	Pith::SexprPrinter out_;
 };
 
-}  // namespace Binary
 }  // namespace Wasm
 }  // namespace Ab
 
 auto dump(Config& cfg, std::istream& is, std::ostream& os) -> void {
 	Pith::SexprPrinter out{os};
-	Ab::Wasm::Binary::WastPrinter printer{cfg, out};
-	Ab::Wasm::Binary::Reader reader{printer, is};
+	Ab::Wasm::WastPrinter printer{cfg, out};
+	Ab::Wasm::Reader reader{printer, is};
 
 	reader();
 }

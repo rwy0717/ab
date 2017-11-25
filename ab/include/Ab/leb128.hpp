@@ -123,10 +123,10 @@ inline auto varuint32(ReaderInput& in) -> std::uint64_t {
 	return uleb128(in);
 }
 
-#include <Ab/Wasm/Binary/TypeCode.hpp>
+#include <Ab/Wasm/TypeCode.hpp>
 
-inline auto typeCode(ReaderInput& in) -> Ab::Wasm::Binary::TypeCode {
-	return (Ab::Wasm::Binary::TypeCode)in.get();
+inline auto typeCode(ReaderInput& in) -> Ab::Wasm::TypeCode {
+	return (Ab::Wasm::TypeCode)in.get();
 }
 
 }  // namespace Ab

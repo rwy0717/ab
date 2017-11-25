@@ -5,6 +5,9 @@
 
 namespace Om {
 
+
+#if 0
+
 constexpr inline Value::Value() : value_{0} {
 }
 
@@ -14,13 +17,14 @@ constexpr inline Value::Value(const Type& x) : value_{(std::uintptr_t)x} {
 	// static_assert(sizeof(Type) == sizeof(std::uintptr_t), "Values must be
 	// pointer-width.");
 }
-
 /// TODO: Assert uintptr_t is convertible to Type.
 template <typename Type>
 constexpr inline auto Value::to() const -> Type {
 	// static_assert(sizeof(Type) == sizeof(std::uintptr_t), "Values are pointer-width.");
 	return static_cast<Type>(value_);
 }
+
+#endif
 
 }  // namespace Om
 

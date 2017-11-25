@@ -18,6 +18,11 @@ inline auto Cell::map(Map* map) noexcept -> Cell& {
 	return *this;
 }
 
+inline auto Cell::size() const noexcept -> std::size_t {
+	// return map()->instanceSize(*this);
+	return 0;
+}
+
 }  // namespace Om
 
 #endif  // OM_CELL_INL_HPP_

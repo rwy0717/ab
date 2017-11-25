@@ -2,7 +2,7 @@
 #define AB_INSTRUCTION_HPP_
 
 #include <Ab/Config.hpp>
-#include <Ab/Wasm/Binary/OpCode.hpp>
+#include <Ab/Wasm/OpCode.hpp>
 #include <cstdint>
 
 namespace Ab {

@@ -2,9 +2,11 @@
 #define AB_WASM_BINARY_EXPRESSION_HPP_
 
 #include <Ab/Config.hpp>
-#include <Ab/Wasm/Binary/OpCode.hpp>
-#include <Ab/Wasm/Binary/TypeCode.hpp>
+#include <Ab/Wasm/OpCode.hpp>
+#include <Ab/Wasm/TypeCode.hpp>
 #include <Ab/leb128.hpp>
+#include <Ab/Wasm/OpDispatch.hpp>
+#include <Ab/Wasm/OpName.hpp>
 #include <Pith/SexprPrinter.hpp>
 #include <cstddef>
 #include <cstdint>
@@ -12,7 +14,6 @@
 
 namespace Ab {
 namespace Wasm {
-namespace Binary {
 
 /// Any expression.
 struct AnyExpr {
@@ -26,10 +27,6 @@ public:
 private:
 	OpCode op_;
 };
-
-/// Print an expression. This will use the OpCode and opDispatch to cast itself to the accurate
-/// expression before printing.
-inline auto operator<<(Pith::SexprPrinter& out, const AnyExpr& any) -> Pith::SexprPrinter&;
 
 /// Immediate Traits.
 /// Member types:
@@ -142,15 +139,6 @@ struct BranchTableImmediate : public Immediate {
 	}
 };
 
-inline auto operator<<(Pith::SexprPrinter& out, const BranchTableImmediate::Value& imm)
-	-> Pith::SexprPrinter& {
-	out << "default" << imm.defaultTarget;
-	for (const auto& target : imm.targetTable) {
-		return out << target;
-	}
-	return out;
-}
-
 struct MemoryImmediate : public Immediate {
 	struct Value {
 		std::uint64_t flags;
@@ -162,12 +150,6 @@ struct MemoryImmediate : public Immediate {
 		out.offset = varuint32(in);
 	}
 };
-
-inline auto operator<<(Pith::SexprPrinter& out, const MemoryImmediate::Value& immediate)
-	-> Pith::SexprPrinter& {
-	out << immediate.flags << immediate.offset;
-	return out;
-}
 
 /// An expression type with a known opcode value.
 template <OpCode op_v>
@@ -182,11 +164,6 @@ template <typename Expr>
 struct ReadImmediates;
 
 template <OpCode op>
-inline auto operator<<(std::ostream& out, const Expr<op>& expr) -> std::ostream& {
-	return out << OP_NAME<op>;
-}
-
-template <OpCode op>
 struct NullaryExpr : public Expr<op> {};
 
 template <OpCode op>
@@ -195,12 +172,6 @@ struct ReadImmediates<NullaryExpr<op>> {
 		// Nullary expressions have no immediates, so there is no decoding work here.
 	}
 };
-
-template <OpCode op>
-inline auto operator<<(Pith::SexprPrinter& out, const NullaryExpr<op>& expr)
-	-> Pith::SexprPrinter& {
-	return out << OP_NAME<op>;
-}
 
 template <OpCode op_v, typename Immediate>
 struct UnaryExpr : public Expr<op_v> {
@@ -230,12 +201,6 @@ struct ReadImmediates<UnaryExpr<op, Immediate>> {
 		Immediate::read(in, out.immediate());
 	}
 };
-
-template <OpCode op, typename Immediate>
-inline auto operator<<(Pith::SexprPrinter& out, const UnaryExpr<op, Immediate>& expr)
-	-> Pith::SexprPrinter& {
-	return out << OP_NAME<op> << expr.immediate();
-}
 
 template <OpCode op>
 struct OpTraits {
@@ -1316,112 +1281,9 @@ struct OpTraits<OpCode::F64_COPYSIGN> {
 	using ExprType = F64CopysignExpr;
 };
 
-/// A functor that will cast the AnyExpr to a concrete expression type, and call function(expr,
-/// args...);
-//// The expression type is obtained as OpTraits<Op>::Expr.
-template <OpCode op>
-struct ExprCastDispatch {
-	///
-	template <typename Function, typename... Args>
-	auto operator()(Function&& function, AnyExpr& expr, Args&&... args)
-		-> decltype(function(expr, std::forward<Args>(args)...)) {
-		using Expr = typename OpTraits<op>::ExprType;
-		return function(static_cast<Expr&>(expr), std::forward<Args>(args)...);
-	}
-
-	template <typename Function, typename... Args>
-	auto operator()(Function&& function, const AnyExpr& expr, Args&&... args)
-		-> decltype(function(expr, std::forward<Args>(args)...)) {
-		using Expr = typename OpTraits<op>::ExprType;
-		return function(static_cast<const Expr&>(expr), std::forward<Args>(args)...);
-	}
-};
-
-/// Apply a function to an expression.
-/// This function will downcast the AnyExpr to the concrete expression type, calling function on it.
-/// The dispatcher will look at the opcode, and dispatch to the function.
-/// This dispatch function performs run-time dispatching. For generating switch statements, or your
-/// own runtime dispatch, see opDispatch.
-template <typename Function, typename... Args>
-inline auto exprDispatch(AnyExpr& expr, Function&& function, Args&&... args)
-	-> decltype(function(std::declval<AnyExpr>(), args...)) {
-	return opDispatch<ExprCastDispatch>(expr.op(), function, expr, std::forward<Args>(args)...);
-}
-
-template <typename Function, typename... Args>
-inline auto exprDispatch(const AnyExpr& expr, Function&& function, Args&&... args)
-	-> decltype(function(std::declval<AnyExpr>(), args...)) {
-	return opDispatch<ExprCastDispatch>(expr.op(), function, expr, std::forward<Args>(args)...);
-}
-
-/// Print to std::ostream.
-struct PrintOp {
-	template <typename Expr>
-	auto operator()(const Expr& x, std::ostream& out) const -> std::ostream& {
-		return out << OP_NAME<Expr::OP_CODE>;
-	}
-};
-
-/// Print to std::ostream.
-struct Print {
-	template <typename T>
-	auto operator()(T x, std::ostream& out) const -> std::ostream& {
-		return out << x;
-	}
-};
-
-struct SexprPrint {
-	/// Print to SexprPrinter.
-	template <typename Expr>
-	auto operator()(const Expr& expr, Pith::SexprPrinter& out) const -> Pith::SexprPrinter& {
-		return out << expr;
-	}
-};
-
-inline auto operator<<(Pith::SexprPrinter& out, const AnyExpr& any) -> Pith::SexprPrinter& {
-	return exprDispatch(any, SexprPrint(), out);
-}
-
-/// Read the Expression that corresponds to the opcode, and call the function on expr.
-template <OpCode op>
-struct ReadExpr {
-	/// Decode an expression and call function on the result.
-	template <typename Function, typename... Args>
-	auto operator()(ReaderInput& in, Function&& function, Args&&... args) -> void {
-		using E = typename OpTraits<op>::ExprType;
-		ReadImmediates<E> read;
-		E expr;
-		read(in, expr);
-		function(expr, std::forward<Args>(args)...);
-	}
-};
-
-/// The WASM expression decoder.
-struct ExprReader {
-	/// Decode a sequence of expressions and call function on each expression.
-	template <typename Function, typename... Args>
-	auto operator()(ReaderInput& in, std::size_t size, Function&& function, Args&&... args)
-		-> void;
-};
-
-/// A WASM expression printer.
-class ExprPrinter {
-public:
-	inline ExprPrinter(Pith::SexprPrinter& out);
-
-	/// Accepts any expr type, and prints it.
-	template <typename Expr>
-	inline auto operator()(const Expr& e) -> void;
-
-private:
-	Pith::SexprPrinter& out_;
-	std::size_t blockDepth_;
-};
-
-}  // namespace Binary
 }  // namespace Wasm
 }  // namespace Ab
 
-#include <Ab/Wasm/Binary/Expression.inl.hpp>
+#include <Ab/Wasm/Expression.inl.hpp>
 
 #endif  // AB_WASM_BINARY_EXPRESSION_HPP_
