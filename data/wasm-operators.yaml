@@ -1,0 +1,542 @@
+---
+
+#### Listing of WASM operators
+#### http://webassembly.org/docs/binary-encoding/
+#### http://webassembly.org/docs/semantics/
+
+### Standard Opcodes
+
+## Control Flow
+
+- name: unreachable
+  code: 0x00
+  doc: Trap immediately
+- name: nop
+  code: 0x01
+  doc:  no operation
+- name: block
+  code: 0x02
+  doc:  begin a sequence of expressions, yielding 0 or 1 values
+- name: loop
+  code: 0x03
+  doc:  Begin a block which can also form control flow loops
+- name: if
+  code: 0x04
+  doc:  Begin if expression
+- name: else
+  code: 0x05
+  doc:  Begin else expression of if
+- name: end
+  code: 0x0b
+  const: END
+  doc:  End a block, loop, or if
+- name: br
+  code: 0x0c
+  doc:  Break that targets an outer nested block
+  immediates:
+    - relative_depth: varuint32
+- name: br_if
+  code: 0x0d
+  doc: Conditional break that targets an outer nested block.
+  immediates:
+    - relative_depth: varuint32
+- name: br_table
+  code: 0x0e
+  doc: Branch table control flow construct
+  immediates:
+    - target_count: varuint32
+    - target_table: varuint32*
+    - default_target: varuint32
+- name: return
+  code: 0x0f
+  doc: return 0 or 1 value from this function
+- name: call
+  code: 0x10
+  doc: Call a function by it's index
+  immediates:
+    - function_index: varuint32
+- name: call_indirect
+  code: 0x11
+  doc: Call a function indirect with an expected signature.
+    This operator takes a list of function arguments.
+  immediates:
+    - type_index: varuint32
+    - reserved: varuint1 # For future use, and must be zero.
+
+## Parametric operators
+
+- name: drop
+  code: 0x1a
+  doc: Ingnore value.
+- name: select
+  code: 0x1b
+  doc: Select one of two values based on condition
+
+# Variable access
+
+- name: get_local
+  code: 0x20
+  doc: Read a local variable or parameter
+  immediates:
+    - local_index: varuint32
+- name: set_local
+  code: 0x21
+  doc: Write a local variable or paramter
+  immediates:
+    - local_index: varuint32
+- name: tee_local
+  code: 0x22
+  doc: Write a local variable or parameter, then return the same value.
+- name: get_global
+  code: 0x23
+  doc: Read a global variable
+  immediates:
+    - global_index: varuint32
+- name: set_global
+  code: 0x24
+  doc: Write a global variable
+  immediates:
+    - global_index: varuint32
+
+## Memory load operators
+
+- name: i32_load
+  code: 0x28
+  doc:
+  immediates:
+    - flags: varuint32
+    - offset: varuint32
+- name: i64_load
+  code: 0x29
+  doc:
+  immediates:
+    - flags: varuint32
+    - offset: varuint32
+- name: f32_load
+  code: 0x2a
+  doc:
+  immediates:
+    - flags: varuint32
+    - offset: varuint32
+- name: f64_load
+  code: 0x2b
+  doc:
+  immediates:
+    - flags: varuint32
+    - offset: varuint32
+- name: i32_load8_s
+  code: 0x2c
+  doc:
+  immediates:
+    - flags: varuint32
+    - offset: varuint32
+- name: i32_load8_u
+  code: 0x2d
+  doc:
+  immediates:
+    - flags: varuint32
+    - offset: varuint32
+- name: i32_load16_s
+  code: 0x2e
+  doc:
+  immediates:
+    - flags: varuint32
+    - offset: varuint32
+- name: i32_load16_u
+  code: 0x2f
+  doc:
+  immediates:
+    - flags: varuint32
+    - offset: varuint32
+- name: i64_load8_s
+  code: 0x30
+  doc:
+  immediates:
+    - flags: varuint32
+    - offset: varuint32
+- name: i64_load8_u
+  code: 0x31
+  doc:
+  immediates:
+    - flags: varuint32
+    - offset: varuint32
+- name: i64_load16_s
+  code: 0x32
+  doc:
+  immediates:
+    - flags: varuint32
+    - offset: varuint32
+- name: i64_load16_u
+  code: 0x33
+  doc:
+  immediates:
+    - flags: varuint32
+    - offset: varuint32
+- name: i64_load32_s
+  code: 0x34
+  doc:
+  immediates:
+    - flags: varuint32
+    - offset: varuint32
+- name: i64_load32_u
+  code: 0x35
+  doc:
+  immediates:
+    - flags: varuint32
+    - offset: varuint32
+
+## Memory store operators
+
+- name: i32_store
+  code: 0x36
+  doc: Store to memory
+  immediates:
+    - flags: varuint32
+    - offset: varuint32
+- name: i64_store
+  code: 0x37
+  doc: Store to memory
+  immediates:
+    - flags: varuint32
+    - offset: varuint32
+- name: f32_store
+  code: 0x38
+  doc: Store to memory
+  immediates:
+    - flags: varuint32
+    - offset: varuint32
+- name: f64_store
+  code: 0x39
+  doc: Store to memory
+  immediates:
+    - flags: varuint32
+    - offset: varuint32
+- name: i32_store8
+  code: 0x3a
+  doc: Store to memory
+  immediates:
+    - flags: varuint32
+    - offset: varuint32
+- name: i32_store16
+  code: 0x3b
+  doc: Store to memory
+  immediates:
+    - flags: varuint32
+    - offset: varuint32
+- name: i64_store8
+  code: 0x3c
+  doc: Store to memory
+  immediates:
+    - flags: varuint32
+    - offset: varuint32
+- name: i64_store16
+  code: 0x3d
+  doc: Store to memory
+  immediates:
+    - flags: varuint32
+    - offset: varuint32
+- name: i64_store32
+  code: 0x3e
+  doc: Store to memory
+  immediates:
+    - flags: varuint32
+    - offset: varuint32
+
+## Memory
+
+- name: current_memory
+  code: 0x3f
+  doc: Query the size of memory
+  immediates:
+    - reserved: varuint1
+- name: grow_memory
+  code: 0x40
+  doc: ""
+
+## Constants
+
+- name: i32_const
+  code: 0x41
+  doc: A constant i32
+  immediates:
+    - value: varint32
+- name: i64_const
+  code: 0x42
+  doc: A constant i64
+  immediates:
+    - value: varint64
+- name: f32_const
+  code: 0x43
+  doc: A constant f32
+  immediates:
+    - value: uint32
+- name: f64_const
+  code: 0x44
+  doc: A constant f64
+  immediates:
+    - value: uint64
+
+## Comparison Operators
+
+- name: i32_eqz
+  code: 0x45
+- name: i32_eq
+  code: 0x46
+- name: i32_ne
+  code: 0x47
+- name: i32_lt_s
+  code: 0x48
+- name: i32_lt_u
+  code: 0x49
+- name: i32_gt_s
+  code: 0x4a
+- name: i32_gt_u
+  code: 0x4b
+- name: i32_le_s
+  code: 0x4c
+- name: i32_le_u
+  code: 0x4d
+- name: i32_ge_s
+  code: 0x4e
+- name: i32_ge_u
+  code: 0x4f
+
+- name: i64_eqz
+  code: 0x50
+- name: i64_eq
+  code: 0x51
+- name: i64_ne
+  code: 0x52
+- name: i64_lt_s
+  code: 0x53
+- name: i64_lt_u
+  code: 0x54
+- name: i64_gt_s
+  code: 0x55
+- name: i64_gt_u
+  code: 0x56
+- name: i64_le_s
+  code: 0x57
+- name: i64_le_u
+  code: 0x58
+- name: i64_ge_s
+  code: 0x59
+- name: i64_ge_u
+  code: 0x5a
+
+- name: f32_eq
+  code: 0x5b
+- name: f32_ne
+  code: 0x5c
+- name: f32_lt
+  code: 0x5d
+- name: f32_gt
+  code: 0x5e
+- name: f32_le
+  code: 0x5f
+- name: f32_ge
+  code: 0x60
+
+- name: f64_eq
+  code: 0x61
+- name: f64_ne
+  code: 0x62
+- name: f64_lt
+  code: 0x63
+- name: f64_gt
+  code: 0x64
+- name: f64_le
+  code: 0x65
+- name: f64_ge
+  code: 0x66
+
+## Numeric Operators
+
+- name: I32_CLZ
+  code: 0x67
+- name: I32_CTZ
+  code: 0x68
+- name: I32_POPCNT
+  code: 0x69
+- name: I32_ADD
+  code: 0x6a
+- name: I32_SUB
+  code: 0x6b
+- name: I32_MUL
+  code: 0x6c
+- name: I32_DIV_S
+  code: 0x6d
+- name: I32_DIV_U
+  code: 0x6e
+- name: I32_REM_S
+  code: 0x6f
+- name: I32_REM_U
+  code: 0x70
+- name: I32_AND
+  code: 0x71
+- name: I32_OR
+  code: 0x72
+- name: I32_XOR
+  code: 0x73
+- name: I32_SHL
+  code: 0x74
+- name: I32_SHR_S
+  code: 0x75
+- name: I32_SHR_U
+  code: 0x76
+- name: I32_ROTL
+  code: 0x77
+- name: I32_ROTR
+  code: 0x78
+
+- name: I64_CLZ
+  code: 0x79
+- name: I64_CTZ
+  code: 0x7a
+- name: I64_POPCNT
+  code: 0x7b
+- name: I64_ADD
+  code: 0x7c
+- name: I64_SUB
+  code: 0x7d
+- name: I64_MUL
+  code: 0x7e
+- name: I64_DIV_S
+  code: 0x7f
+- name: I64_DIV_U
+  code: 0x80
+- name: I64_REM_S
+  code: 0x81
+- name: I64_REM_U
+  code: 0x82
+- name: I64_AND
+  code: 0x83
+- name: I64_OR
+  code: 0x84
+- name: I64_XOR
+  code: 0x85
+- name: I64_SHL
+  code: 0x86
+- name: I64_SHR_S
+  code: 0x87
+- name: I64_SHR_U
+  code: 0x88
+- name: I64_ROTL
+  code: 0x89
+- name: I64_ROTR
+  code: 0x8a
+
+- name: F32_ABS
+  code: 0x8b
+- name: F32_NEG
+  code: 0x8c
+- name: F32_CEIL
+  code: 0x8d
+- name: F32_FLOOR
+  code: 0x8e
+- name: F32_TRUNC
+  code: 0x8f
+- name: F32_NEAREST
+  code: 0x90
+- name: F32_SQRT
+  code: 0x91
+- name: F32_ADD
+  code: 0x92
+- name: F32_SUB
+  code: 0x93
+- name: F32_MUL
+  code: 0x94
+- name: F32_DIV
+  code: 0x95
+- name: F32_MIN
+  code: 0x96
+- name: F32_MAX
+  code: 0x97
+
+- name: F32_COPYSIGN
+  code: 0x98
+- name: F64_ABS
+  code: 0x99
+- name: F64_NEG
+  code: 0x9a
+- name: F64_CEIL
+  code: 0x9b
+- name: F64_FLOOR
+  code: 0x9c
+- name: F64_TRUNC
+  code: 0x9d
+- name: F64_NEAREST
+  code: 0x9e
+- name: F64_SQRT
+  code: 0x9f
+- name: F64_ADD
+  code: 0xa0
+- name: F64_SUB
+  code: 0xa1
+- name: F64_MUL
+  code: 0xa2
+- name: F64_DIV
+  code: 0xa3
+- name: F64_MIN
+  code: 0xa4
+- name: F64_MAX
+  code: 0xa5
+- name: F64_COPYSIGN
+  code: 0xa6
+
+## Conversions
+
+- name: I32_WRAP_I64
+  code: 0xa7
+- name: I32_TRUNC_S_F32
+  code: 0xa8
+- name: I32_TRUNC_U_F32
+  code: 0xa9
+- name: I32_TRUNC_S_F64
+  code: 0xaa
+- name: I32_TRUNC_U_F64
+  code: 0xab
+- name: I64_EXTEND_S_I32
+  code: 0xac
+- name: I64_EXTEND_U_I32
+  code: 0xad
+- name: I64_TRUNC_S_F32
+  code: 0xae
+- name: I64_TRUNC_U_F32
+  code: 0xaf
+- name: I64_TRUNC_S_F64
+  code: 0xb0
+- name: I64_TRUNC_U_F64
+  code: 0xb1
+- name: F32_CONVERT_S_I32
+  code: 0xb2
+- name: F32_CONVERT_U_I32
+  code: 0xb3
+- name: F32_CONVERT_S_I64
+  code: 0xb4
+- name: F32_CONVERT_U_I64
+  code: 0xb5
+- name: F32_DEMOTE_F64
+  code: 0xb6
+- name: F64_CONVERT_S_I32
+  code: 0xb7
+- name: F64_CONVERT_U_I32
+  code: 0xb8
+- name: F64_CONVERT_S_I64
+  code: 0xb9
+- name: F64_CONVERT_U_I64
+  code: 0xba
+- name: F64_PROMOTE_F32
+  code: 0xbb
+
+## Reinterpretations
+
+- name: I32_REINTERPRET_F32
+  code: 0xbc
+- name: I64_REINTERPRET_F64
+  code: 0xbd
+- name: F32_REINTERPRET_I32
+  code: 0xbe
+- name: F64_REINTERPRET_I64
+  code: 0xbf
+...

@@ -1,0 +1,18 @@
+#ifndef AB_INTERNALOPERATORS_HPP_
+#define AB_INTERNALOPERATORS_HPP_
+
+/// This header template is generated
+
+namespace Ab {
+
+using RawOpCode = std::uint8_t;
+
+enum class OpCode {
+	{% foreach operator in %}
+};
+
+template <typename T>
+
+} // namespace Ab
+
+#endif // AB_INTERNALOPERATORS_HPP_

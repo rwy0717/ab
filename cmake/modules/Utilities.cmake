@@ -31,6 +31,28 @@ function(add_ab_test name)
 	set_target_properties(${name}
 		PROPERTIES
 			CXX_CLANG_TIDY ""  # Disable because gtest errors a lot.
-			CXX_STANDARD 14
+			CXX_STANDARD 17
 	)
 endfunction(add_ab_test)
+
+# Add a jinja-generated source file
+# Usage:
+#  ab_add_generated_source(
+#    INPUT <input>
+#    OUTPUT <output>
+#    DATA_FILES <data-file>...
+#  )
+function(ab_add_generated_source)
+	cmake_parse_arguments("ARG" "" "INPUT;OUTPUT" "DATA_FILES" "${ARGN}")
+	message(STATUS "${ARG_INPUT}")
+	add_custom_command(
+		COMMAND
+			python3 ${CMAKE_SOURCE_DIR}/scripts/generate-cxx.py
+			--datadir=${CMAKE_SOURCE_DIR}/data
+			${CMAKE_CURRENT_SOURCE_DIR}/${ARG_INPUT}
+			${CMAKE_CURRENT_BINARY_DIR}/${ARG_OUTPUT}
+		MAIN_DEPENDENCY ${ARG_INPUT}
+		OUTPUT ${ARG_OUTPUT}
+		DEPENDS ${ARG_DATA_FILES}
+	)
+endfunction(ab_add_generated_source)

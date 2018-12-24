@@ -52,11 +52,11 @@ ForEachMacros:   [ foreach, Q_FOREACH, BOOST_FOREACH ]
 IncludeCategories:
   - Regex:           '^<.*Config.hpp>$'
     Priority:        1
-  - Regex:           '^<(Ab|Abi|Om|Pith)/Internal.*>$'
+  - Regex:           '^<(Ab|Abi|Om|Ab)/Internal.*>$'
     Priority:        2
   - Regex:           '^".*"$'
     Priority:        3
-  - Regex:           '^<(Ab|Abi|Om|Pith)/.*>$'
+  - Regex:           '^<(Ab|Abi|Om|Ab)/.*>$'
     Priority:        4
   - Regex:           '^<.*>$'
     Priority:        5
