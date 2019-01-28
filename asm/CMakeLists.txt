@@ -4,7 +4,11 @@ add_executable(ab-asm
 
 target_link_libraries(ab-asm
 	PUBLIC
+		ab-base
 		ab-core
+		ab-commands
+		ab-util
+		ab-wast-parser
 )
 
 target_compile_features(ab-asm

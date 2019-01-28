@@ -1,0 +1,70 @@
+#include <Ab/Interpreter.hpp>
+#include <Ab/InternalOpCode.hpp>
+
+#include <cstdio>
+
+{%- set decl_state_args -%}
+    {%- for state in data.interpreter_state.primary -%}
+        {{- state.type }} {{ state.name }}{{ ", " if not loop.last -}}
+    {%- endfor -%}
+{%- endset -%}
+
+{%- set state_args -%}
+    {%- for state in data.interpreter_state.primary -%}
+        {{- state.name }}{{ ", " if not loop.last -}}
+    {%- endfor -%}
+{%- endset -%}
+
+{%- macro begin_handler(name) -%}
+    static void handle_{{ name }}({{ decl_state_args }})
+{%- endmacro -%}
+
+{%- set dispatch -%}
+    dispatch({{ state_args }});
+{%- endset %}
+
+{# end of macros #}
+
+namespace Ab {
+
+using Handler = void(*)({{ decl_state_args }});
+
+static void dispatch({{ decl_state_args }});
+
+{{ begin_handler('unimplemented') }} {
+    exit(1);
+}
+
+{{ begin_handler('nop') }} {
+    ++pc;
+    {{ dispatch }}
+}
+
+{{ begin_handler('unreachable') }} {
+    exit(1);
+}
+
+/*
+const Handler DISPATCH_TABLE = {
+    {% for operator in data.internal_operators | sort(attribute = code) -%}
+        {% if operator.implemented %}
+            handle_{{ operator.name }}
+        {% else %}
+            handle_unimplemented
+        {% endif $}
+        {{",\n" if not loop.last}}
+    {%- endfor -%}
+};
+*/
+
+const Handler DISPATCH_TABLE[] = {
+    [1] = handle_nop
+};
+
+static void dispatch({{ decl_state_args }}) {
+
+
+                return DISPATCH_TABLE[*pc]({{ state_args }});
+}
+
+} // namespace Ab

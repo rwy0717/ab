@@ -1,13 +1,47 @@
 
-ab_add_generated_source(
+ab_add_jinja_cxx_template(
 	INPUT  include/Ab/Wasm/OpCode.hpp.jinja
 	OUTPUT include/Ab/Wasm/OpCode.hpp
 	DATA_FILES
-		${CMAKE_SOURCE_DIR}/data/wasm-operators.yaml
+		${CMAKE_SOURCE_DIR}/data/wasm_operators.yaml
+)
+
+ab_add_jinja_cxx_template(
+	INPUT  include/Ab/InternalOpCode.hpp.jinja
+	OUTPUT include/Ab/InternalOpCode.hpp
+	DATA_FILES
+		${CMAKE_SOURCE_DIR}/data/internal_operators.yaml
+)
+
+ab_add_jinja_cxx_template(
+	INPUT  include/Ab/InternalFunctionBuilder.hpp.jinja
+	OUTPUT include/Ab/InternalFunctionBuilder.hpp
+	DATA_FILES
+		${CMAKE_SOURCE_DIR}/data/internal_operators.yaml
+)
+
+ab_add_jinja_cxx_template(
+	INPUT  include/Ab/Interpreter.hpp.jinja
+	OUTPUT include/Ab/Interpreter.hpp
+	DATA_FILES
+		${CMAKE_SOURCE_DIR}/data/internal_operators.yaml
+		${CMAKE_SOURCE_DIR}/data/interpreter_state.yaml
+)
+
+ab_add_jinja_cxx_template(
+	INPUT  src/ab-core-Interpreter.cpp.jinja
+	OUTPUT src/ab-core-Interpreter.cpp
+	DATA_FILES
+		${CMAKE_SOURCE_DIR}/data/internal_operators.yaml
+		${CMAKE_SOURCE_DIR}/data/interpreter_state.yaml
 )
 
 add_library(ab-core
 	include/Ab/Wasm/OpCode.hpp
+	include/Ab/InternalOpCode.hpp
+	include/Ab/InternalFunctionBuilder.hpp
+	include/Ab/Interpreter.hpp
+	src/ab-core-Interpreter.cpp
 	src/ab-core-Process.cpp
 	src/ab-core-Version.cpp
 	src/Wasm/ab-core-wasm-Loader.cpp

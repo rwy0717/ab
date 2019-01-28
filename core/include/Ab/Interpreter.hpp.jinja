@@ -1,0 +1,41 @@
+#ifndef AB_INTERPRETER_HPP_
+#define AB_INTERPRETER_HPP_
+
+#include <Ab/Config.hpp>
+#include <Ab/Instruction.hpp>
+#include <Ab/Assert.hpp>
+#include <iostream>
+
+namespace Ab {
+
+enum class Operator {
+
+};
+
+struct PrimaryState {
+	{% for state in data.interpreter_state.primary %}
+		{{ state.type }} {{ state.name }};
+	{% endfor %}
+};
+
+struct SecondaryState {
+	{% for state in data.interpreter_state.secondary %}
+		{{ state.type }} {{ state.name }};
+	{% endfor %}
+};
+
+struct State {
+public:
+	PrimaryState primary;
+	SecondaryState secondary;
+};
+
+class Interpreter {
+public:
+	void operator()() {}
+private:
+};
+
+}  // namespace Ab
+
+#endif  // AB_INTERPRETER_HPP_

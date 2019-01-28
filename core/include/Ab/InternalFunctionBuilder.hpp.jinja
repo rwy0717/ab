@@ -1,0 +1,75 @@
+#if !defined(AB_INTERNALFUNCTIONBUILDER_HPP_)
+#define AB_INTERNALFUNCTIONBUILDER_HPP_
+
+#include <Ab/InternalOpCode.hpp>
+
+#include <fmt/core.h>
+
+namespace Ab {
+
+/// Quick and dirty byte output code.
+class ByteBuffer {
+public:
+	std::uint8_t* data() { return buf_.data(); }
+
+	const std::uint8_t* data() const { return buf_.data(); }
+
+	void emit(std::uint8_t x) {
+		buf_.push_back(x);
+	}
+
+	// convert to LE and stream to
+	void emit(std::uint16_t x) {
+		emit(std::uint8_t(x));
+		emit(std::uint8_t(x >> 8));
+	}
+
+	void emit(std::uint32_t x) {
+		emit(std::uint16_t(x));
+		emit(std::uint16_t(x >> 16));
+	}
+
+	void emit(std::uint64_t x) {
+		emit(std::uint32_t(x));
+		emit(std::uint32_t(x >> 32));
+	}
+
+private:
+	std::vector<std::uint8_t> buf_;
+};
+
+template <typename T>
+void encode(ByteBuffer out, T&& x) {
+	x.encode(out);
+}
+
+using varuint1 = std::uint8_t;
+
+using varuint32 = std::uint32_t;
+using varint32 = std::int32_t;
+
+using varuint64 = std::uint64_t;
+using varint64 = std::uint64_t;
+
+using uint64 = std::uint64_t;
+using uint32 = std::uint32_t;
+
+class InternalFunctionBuilder {
+public:
+{% for operator in data.internal_operators %}
+	void emit_{{ operator.name }}(
+		{%- for immediate in operator.immediates %}
+			{%- for name, type in immediate.items() -%}
+				{{- type }} {{ name }}
+			{%- endfor -%}
+			{{ ", " if not loop.last }}
+		{%- endfor -%}
+	) {
+		fmt::print("{{operator.name}}\n");
+	}{{ "\n" if not loop.last }}
+{% endfor %}
+};
+
+}  // namespace Ab
+
+#endif // AB_INTERNALFUNCTIONBUILDER_HPP_

@@ -235,8 +235,6 @@ struct SexprPrint {
 	}
 };
 
-
-
 /// Print to std::ostream.
 struct Print {
 	template <typename T>

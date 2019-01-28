@@ -5,18 +5,17 @@
 #include <cstdint>
 #include <ostream>
 
-namespace Ab {
-namespace Wasm {
+namespace Ab::Wasm {
 
 using RawOpCode = std::uint8_t;
 
 #define AB_WASM_OPCODE_X(X) \
-	{% for operator in data['wasm-operators'] %}
+	{% for operator in data.wasm_operators %}
 	X({{ operator.name.ljust(16) | upper}}, {{ "0x%02x" % operator.code}}){{ " \\" if not loop.last }}
 	{% endfor %}
 
 enum class OpCode : RawOpCode {
-{% for operator in data['wasm-operators'] %}
+{% for operator in data.wasm_operators %}
 	/// {{operator.name}}: {{operator.doc}}
 	{{ operator.name.ljust(16) | upper }} = {{ "0x%02x" % operator.code }}{{ ",\n"  if not loop.last }}
 {% endfor %}
@@ -24,14 +23,14 @@ enum class OpCode : RawOpCode {
 
 template <OpCode CODE> constexpr const char* const OP_NAME = "unknown";
 
-{% for operator in data['wasm-operators'] %}
+{% for operator in data.wasm_operators %}
 template <> constexpr const char* const OP_NAME<OpCode::{{ operator.name | upper }}> = "{{ operator.name }}";
 {% endfor %}
 
 template <template <OpCode> class Function, typename... Args>
 constexpr auto opDispatch(OpCode op, Args&&... args) {
 	switch(op) {
-{% for operator in data['wasm-operators'] %}
+{% for operator in data.wasm_operators %}
 	case OpCode::{{ operator.name | upper }}:
 		return Function<OpCode::{{ operator.name | upper }}>()(std::forward<Args>(args)...);
 {% endfor %}
@@ -49,7 +48,6 @@ constexpr const char* opName(OpCode op) noexcept {
 	return opDispatch<OpName>(op);
 }
 
-}  // namespace Wasm
-}  // namespace Ab
+}  // namespace Ab::Wasm
 
 #endif  // AB_WASM_BYTECODE_HPP_

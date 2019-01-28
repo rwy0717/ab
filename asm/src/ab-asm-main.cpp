@@ -1,12 +1,8 @@
-namespace Parse {
+#include <Ab/Commands.hpp>
 
-struct Error {};
-
-template <typename... Args>
-struct Seq {};
-
-} // namespace Parse
+static const char* USAGE = 
+  "Usage: ab asm <input> -o <output>";
 
 extern "C" int main(int argc, char** argv) {
-	
+	return Ab::cmd_asm(argc, argv);
 }

@@ -1,0 +1,20 @@
+#ifndef AB_INTERNALOPCODE_HPP_
+#define AB_INTERNALOPCODE_HPP_
+
+#include <cstddef>
+#include <cstdint>
+
+namespace Ab {
+
+using RawInternalOpCode = std::uint8_t;
+
+enum class InternalOpCode : RawInternalOpCode {
+{% for operator in data['wasm-operators'] %}
+	/// {{operator.name}}: {{operator.doc}}
+	{{ operator.name.ljust(16) | upper }} = {{ "0x%02x" % operator.code }}{{ ",\n"  if not loop.last }}
+{% endfor %}
+};
+
+}  // namespace Ab
+
+#endif  // AB_INTERNALOPCODE_HPP_

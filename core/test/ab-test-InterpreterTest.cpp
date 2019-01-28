@@ -10,12 +10,6 @@ namespace Test {
 class TestInterpreter : public BasicTest {};
 
 TEST_F(TestInterpreter, basic) {
-	[[gnu::unused]] const Ab::Instruction program[] = {
-		Ab::Instruction::UNREACHABLE,
-	};
-
-	[[gnu::unused]] Interpreter interpret;
-	[[gnu::unused]] InterpreterState state;
 }
 
 }  // namespace Test

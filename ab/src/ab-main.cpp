@@ -1,57 +1,54 @@
 
+#include <Ab/Commands.hpp>
 #include <fmt/core.h>
-#include <span>
 #include <string_view>
+#include <utility>
+#include <vector>
+#include <optional>
 
-constexpr const std::size_t NSUBCOMMANDS = 4;
+// https://github.com/git/git/blob/master/git.c
 
-void execBuiltinCommand() {
+using BuiltinFn = int (*)(int argc, char** argv);
 
-}
+struct Builtin {
+	const char* name;
+	BuiltinFn fn;
+	int options;
+};
 
-void execExternalCommand() {
+static const Builtin BUILTINS[] = {  //
+	{"asm", &Ab::cmd_asm, 0},
+	{"disasm", &Ab::cmd_disasm, 0},
+	{"run", &Ab::cmd_run, 0},
+	{"help", &Ab::cmd_help, 0},
+	{"version", &Ab::cmd_version, 0}};
 
-}
-
-void execCommand() {
-
-}
-
-void printSubCommands() {
-	for (const auto subcommand : SUBCOMMANDS) {
-		fmt::print(subcommand, "\n");
+static const Builtin* findBuiltin(std::string_view target) {
+	for (const auto& builtin : BUILTINS) {
+		if (target == builtin.name) {
+			return &builtin;
+		}
 	}
+	return nullptr;
 }
 
-constexpr const char* const HELP_STRING =
-	"ab: web assembly interpreter\n"
-	"built-in subcommands:\n"
-	"  ab run <wasm>:              Run a WASM module.\n"
-	"  ab asm <wast> [<wasm>]:     Assemble a WAST input to a WASM module.\n"
-	"  ab disasm <wasm> [<wast>]:  Disassemble a WASM module to WAST.\n"
-	"  ab help:                    Print this help message.\n"
-	"  ab version:                 Print the version of Ab.\n";
-
-void printHelp() {
-	fmt::print(HELP_STRING);
-}
-
-int processArgs(std::span<char*> args) {
-	if (args.size() == 1) {
-		printHelp();
-		return 1;
+/// Fixup and clean the arguments.
+static void processArgs(int& argc, char**& argv) {
+	// place the subcommand name in argv[0]
+	if (argc == 1) {
+		argv[0] = strdup("help");
+	} else {
+		argc -= 1;
+		argv += 1;
 	}
-
-	std::string_view target = args[2];
-
-	if (target == "help") {
-		printHelp();
-		return 0;
-	}
-
-	fmt::print("ab-", target, "\n");
 }
 
 extern "C" int main(int argc, char** argv) {
-	return processArgs(std::span<char*>(argv, argc));
+	processArgs(argc, argv);
+	auto builtin = findBuiltin(std::string_view(argv[0]));
+	if (!builtin) {
+		fmt::print("error: unrecognized subcommand \"{}\"", argv[0]);
+		return 1;
+	}
+	return builtin->fn(argc, argv);
 }

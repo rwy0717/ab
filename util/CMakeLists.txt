@@ -17,6 +17,7 @@ target_compile_options(ab-util
 target_link_libraries(ab-util
 	PUBLIC
 		ab-base
+		fmt
 )
 
 target_include_directories(ab-util

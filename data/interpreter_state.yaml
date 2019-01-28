@@ -1,0 +1,12 @@
+primary:
+  - name: pc
+    type: std::uint8_t*
+  - name: sp
+    type: std::uint8_t*
+secondary:
+  - name: program
+    type: Instruction*
+  - name: stack
+    type: uintptr_t
+  - name: trap
+    type: bool

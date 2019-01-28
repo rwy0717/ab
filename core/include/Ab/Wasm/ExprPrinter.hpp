@@ -99,7 +99,8 @@ private:
 
 inline auto operator<<(Ab::SexprPrinter& out, const AnyExpr& any) -> Ab::SexprPrinter& {
 	SexprPrint print;
-	return exprDispatch(any, print, out);
+	exprDispatch(any, print, out);
+	return out; // todo: should be able to return exprDispatch, but return type inference is busted.
 }
 
 inline auto operator<<(Ab::SexprPrinter& out, const BranchTableImmediate::Value& imm)

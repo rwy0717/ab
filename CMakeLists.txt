@@ -40,6 +40,8 @@ omr_platform_global_setup()
 
 enable_testing()
 
+link_directories(/usr/local/lib)
+
 # OMR Configuration
 
 set(OMR_EXAMPLE OFF CACHE INTERNAL "Disable the OMR example VM")
@@ -73,6 +75,8 @@ target_compile_options(ab-base
 target_include_directories(ab-base
 	INTERFACE
 		${CMAKE_CURRENT_BINARY_DIR}/include
+		/usr/local/include
+		/include
 )
 
 # External projects
@@ -81,9 +85,12 @@ add_subdirectory(external)
 
 # Sub directories
 
+add_subdirectory(ab)
 add_subdirectory(asm)
+add_subdirectory(commands)
 add_subdirectory(core)
-add_subdirectory(dump)
+add_subdirectory(disasm)
 add_subdirectory(doc)
 add_subdirectory(interpreter)
 add_subdirectory(util)
+add_subdirectory(wast)

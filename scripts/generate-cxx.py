@@ -32,7 +32,7 @@ def parse_args():
 def main():
 	cfg = parse_args()
 	data = load_data(cfg.datadir) if cfg.datadir else {}
-	print(data)
+	# print(data)
 	render = render_template(cfg.IN, data)
 	if cfg.OUT == "-":
 		sys.stdout.write(render)

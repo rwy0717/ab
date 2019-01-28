@@ -179,7 +179,7 @@ private:
 };
 
 }  // namespace Wasm
-}  // namespace Ab
+
 
 auto dump(Config& cfg, std::istream& is, std::ostream& os) -> void {
 	Ab::SexprPrinter out{os};
@@ -235,7 +235,7 @@ auto parseArguments(Config& cfg, int argc, const char* const* argv) -> void {
 	}
 };
 
-extern "C" auto main(int argc, char** argv) -> int {
+int cmd_disasm(int argc, char** argv) {
 	Config cfg;
 
 	parseArguments(cfg, argc, argv);
@@ -259,3 +259,5 @@ extern "C" auto main(int argc, char** argv) -> int {
 	dump(cfg, in, out);
 	return EXIT_SUCCESS;
 }
+
+}  // namespace Ab
