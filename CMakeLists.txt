@@ -4,8 +4,8 @@ cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
 list(APPEND CMAKE_MODULE_PATH
 	${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules
-	${CMAKE_CURRENT_SOURCE_DIR}/external/omr/cmake/modules
 )
+
 
 # Versioning
 
@@ -22,8 +22,12 @@ project(abigail
 # Module Imports
 
 include(FindClangTidy)
-include(OmrPlatform)
 include(Utilities)
+
+if (AB_USE_OMR)
+	include(UseOmr)
+endif(AB_USE_OMR)
+
 
 # Global Configuration
 
@@ -32,24 +36,13 @@ get_git_commit(GIT_COMMIT)
 set(AB_COMMIT ${GIT_COMMIT})
 
 configure_file(
-	"config.hpp.in"
+	"Config.hpp.in"
 	"include/Ab/Config.hpp"
 )
-
-omr_platform_global_setup()
 
 enable_testing()
 
 link_directories(/usr/local/lib)
-
-# OMR Configuration
-
-set(OMR_EXAMPLE OFF CACHE INTERNAL "Disable the OMR example VM")
-set(OMR_FVTEST OFF CACHE INTERNAL "Disable OMR Testing in Ab")
-set(OMR_GC ON CACHE INTERNAL "Enable OMR GC in Ab, for Om")
-set(OMR_JITBUILDER ON CACHE INTERNAL "Enable OMR Jitbuilder, for Ab")
-set(OMR_OM ON CACHE INTERNAL "Enable Om")
-set(OMR_WARNINGS_AS_ERRORS OFF CACHE INTERNAL "Disable warnings as errors")
 
 # Misc utilities
 

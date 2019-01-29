@@ -11,40 +11,40 @@ namespace Ab {
 template <typename DerivedT, typename T>
 class PtrLike : public StaticPoly<PtrLike<DerivedT, T>, DerivedT> {
 private:
-	constexpr T* get() const noexcept(noexcept(this->self()->get())) {
+	constexpr T* get() const noexcept(noexcept(std::declval<DerivedT>().get())) {
 		return this->self()->get();
 	}
 
 public:
 	template <typename U = T, typename = std::enable_if_t<!std::is_void_v<U>>>
-	constexpr U& operator*() const noexcept(noexcept(get())) {
+	constexpr U& operator*() const noexcept(noexcept(std::declval<DerivedT>().get())) {
 		return *get();
 	}
 
 	template <typename U = T, typename = std::enable_if_t<!std::is_void_v<U>>>
-	constexpr U* operator->() const noexcept(noexcept(get())) {
+	constexpr U* operator->() const noexcept(noexcept(std::declval<DerivedT>().get())) {
 		return get();
 	}
 
-	constexpr operator bool() const noexcept(noexcept(this->get())) {
+	constexpr operator bool() const noexcept(noexcept(std::declval<DerivedT>().get())) {
 		return get() != nullptr;
 	}
 
-	constexpr bool operator==(std::nullptr_t) const noexcept(noexcept(get())) {
+	constexpr bool operator==(std::nullptr_t) const noexcept(noexcept(std::declval<DerivedT>().get())) {
 		return get() == nullptr;
 	}
 
-	constexpr bool operator!=(std::nullptr_t) const noexcept(noexcept(get())) {
+	constexpr bool operator!=(std::nullptr_t) const noexcept(noexcept(std::declval<DerivedT>().get())) {
 		return get() != nullptr;
 	}
 
 	template <typename U, typename = std::enable_if_t<std::is_convertible_v<U*, T*>>>
-	constexpr bool operator==(U* rhs) const noexcept(noexcept(get())) {
+	constexpr bool operator==(U* rhs) const noexcept(noexcept(std::declval<DerivedT>().get())) {
 		return get() == rhs;
 	}
 
 	template <typename U, typename = std::enable_if_t<std::is_convertible_v<U*, T*>>>
-	constexpr bool operator==(T* rhs) const noexcept(noexcept(get())) {
+	constexpr bool operator==(T* rhs) const noexcept(noexcept(std::declval<DerivedT>().get())) {
 		return get() == rhs;
 	}
 };

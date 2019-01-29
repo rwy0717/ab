@@ -3,15 +3,22 @@
 
 #include <Ab/Config.hpp>
 #include <Ab/Runtime.hpp>
+
+#ifdef AB_USE_OMR
 #include <OMR/Om/Context.hpp>
 #include <OMR/Om/MemorySystem.hpp>
+#endif
 
 namespace Ab {
 
 class System {
 public:
-	explicit System(Runtime& runtime) : runtime_(runtime), om_(runtime_.om()) {
-	}
+	explicit System(Runtime& runtime) :
+		runtime_(runtime)
+#ifdef AB_USE_OMR
+	, om_(runtime_.om())
+#endif
+	{}
 
 	System(const System&) = delete;
 
@@ -24,6 +31,7 @@ public:
 		return runtime_;
 	}
 
+#ifdef AB_USE_OMR
 	/// Obtain the om/gc subsystem.
 	OMR::Om::MemorySystem& om() {
 		return om_;
@@ -32,16 +40,23 @@ public:
 	const OMR::Om::MemorySystem& om() const {
 		return om_;
 	}
+#endif
 
 private:
 	Runtime& runtime_;
+
+#ifdef AB_USE_OMR
 	OMR::Om::MemorySystem om_;
+#endif
 };
 
 class Context {
 public:
-	explicit Context(System& system) : system_(system), om_(system.om()) {
-	}
+	explicit Context(System& system) : system_(system)
+#ifdef AB_USE_OMR
+	, om_(system.om())
+#endif
+	{}
 
 	Context(const Context&) = delete;
 
@@ -49,6 +64,7 @@ public:
 
 	~Context() = default;
 
+#ifdef AB_USE_OMR
 	OMR::Om::RunContext& om() {
 		return om_;
 	}
@@ -56,6 +72,7 @@ public:
 	const OMR::Om::RunContext& om() const {
 		return om_;
 	}
+#endif
 
 	System& system() const {
 		return system_;
@@ -63,7 +80,9 @@ public:
 
 private:
 	System& system_;
+#ifdef AB_USE_OMR
 	OMR::Om::RunContext om_;
+#endif
 };
 
 class RunContext : public Context {};

@@ -44,27 +44,19 @@ static void dispatch({{ decl_state_args }});
     exit(1);
 }
 
-/*
-const Handler DISPATCH_TABLE = {
-    {% for operator in data.internal_operators | sort(attribute = code) -%}
+const Handler DISPATCH_TABLE[] = {
+    {% for operator in data.internal_operators -%}
         {% if operator.implemented %}
             handle_{{ operator.name }}
         {% else %}
             handle_unimplemented
-        {% endif $}
+        {% endif %}
         {{",\n" if not loop.last}}
     {%- endfor -%}
 };
-*/
-
-const Handler DISPATCH_TABLE[] = {
-    [1] = handle_nop
-};
 
 static void dispatch({{ decl_state_args }}) {
-
-
-                return DISPATCH_TABLE[*pc]({{ state_args }});
+    return DISPATCH_TABLE[*pc]({{ state_args }});
 }
 
 } // namespace Ab

@@ -7,4 +7,6 @@
 #define AB_VERSION "@AB_VERSION@"
 #define AB_COMMIT "@AB_COMMIT@"
 
+#cmakedefine AB_USE_OMR
+
 #endif // AB_CONFIG_HPP_

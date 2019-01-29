@@ -6,6 +6,7 @@
 
 #include <cassert>
 #include <stdio.h>
+#include <utility>
 
 namespace Ab {
 
@@ -88,7 +89,7 @@ private:
 template <typename T>
 class Rc : public PtrLike<Rc<T>, T> {
 public:
-	friend class Rc;
+	// friend class Rc;
 
 	constexpr Rc() : value_(nullptr) {}
 

@@ -60,7 +60,7 @@ target_include_directories(ab-core
 )
 
 target_link_libraries(ab-core
-	omrgc
+	# omrgc
 	ab-base
 	ab-util
 )

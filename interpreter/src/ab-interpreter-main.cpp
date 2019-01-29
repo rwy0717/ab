@@ -2,7 +2,6 @@
 #include <Ab/Runtime.hpp>
 #include <Ab/Version.hpp>
 #include <iostream>
-#include <omrgc.h>
 
 namespace Abi {
 
